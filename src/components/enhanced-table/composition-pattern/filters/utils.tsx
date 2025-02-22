@@ -14,7 +14,7 @@ export function getColumnFilterTypes(column: Column<any, unknown>): FilterType[]
   }
 }
 
-export const Dialogs: FilterFn<any> = (
+export const filterRows: FilterFn<any> = (
   row: Row<any>,
   columnId: string,
   filterValue: { value: any; type: FilterType },

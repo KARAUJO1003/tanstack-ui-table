@@ -11,7 +11,6 @@ export function Dialog() {
   const [open, setOpen] = React.useState(false)
 
   const { table } = useTableContext()
-
   const { filters, setFilters, applyFilters, resetFilters, updateFilterValue } = useDialogs({ table })
 
   return (
@@ -20,7 +19,7 @@ export function Dialog() {
         <Button variant="outline">Dialog Filter</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="!max-w-fit">
         <DialogHeader>
           <DialogTitle>Filters</DialogTitle>
         </DialogHeader>

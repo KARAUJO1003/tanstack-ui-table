@@ -1,9 +1,9 @@
 import { DatePicker } from "@/components/ui/date-picker"
 import { Input } from "@/components/ui/input"
-import type { Column, Table } from "@tanstack/react-table"
-
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import type { Column, Table } from "@tanstack/react-table"
+import type React from "react"
 import { type ColumnFilter, type FilterType, filterTypes } from "./types"
 import { detectValueType, getColumnFilterTypesByValue } from "./utils"
 
@@ -16,7 +16,6 @@ function renderFilterInput(
   updateFilterValue: UpdateFilterValueFn,
 ) {
   const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id)
-
   const type = detectValueType(firstValue)
 
   switch (type) {
@@ -26,30 +25,35 @@ function renderFilterInput(
           <div className="flex gap-2">
             <Input
               type="number"
-              value={(filter.value as [number, number])[0] || ""}
+              value={(filter.value as [number, number])?.[0] ?? ""}
               onChange={(e) =>
-                updateFilterValue(column.id, [Number(e.target.value), (filter.value as [number, number])[1]])
+                updateFilterValue(column.id, [
+                  e.target.value === "" ? null : Number(e.target.value),
+                  (filter.value as [number, number])?.[1],
+                ])
               }
               className="w-[100px]"
             />
 
             <Input
               type="number"
-              value={(filter.value as [number, number])[1] || ""}
+              value={(filter.value as [number, number])?.[1] ?? ""}
               onChange={(e) =>
-                updateFilterValue(column.id, [(filter.value as [number, number])[0], Number(e.target.value)])
+                updateFilterValue(column.id, [
+                  (filter.value as [number, number])?.[0],
+                  e.target.value === "" ? null : Number(e.target.value),
+                ])
               }
               className="w-[100px]"
             />
           </div>
         )
       }
-
       return (
         <Input
           type="number"
-          value={filter.value as number}
-          onChange={(e) => updateFilterValue(column.id, Number(e.target.value))}
+          value={(filter.value as number) ?? undefined}
+          onChange={(e) => updateFilterValue(column.id, e.target.value === "" ? null : Number(e.target.value))}
           className="w-[200px]"
         />
       )
@@ -59,12 +63,13 @@ function renderFilterInput(
         return (
           <div className="flex gap-2">
             <DatePicker
-              date={(filter.value as [Date, Date])[0]}
-              setDate={(date) => updateFilterValue(column.id, [date, (filter.value as [Date, Date])[1]])}
+              date={(filter.value as [Date, Date])?.[0]}
+              setDate={(date) => updateFilterValue(column.id, [date, (filter.value as [Date, Date])?.[1]])}
             />
+
             <DatePicker
-              date={(filter.value as [Date, Date])[1]}
-              setDate={(date) => updateFilterValue(column.id, [(filter.value as [Date, Date])[0], date])}
+              date={(filter.value as [Date, Date])?.[1]}
+              setDate={(date) => updateFilterValue(column.id, [(filter.value as [Date, Date])?.[0], date])}
             />
           </div>
         )
@@ -74,7 +79,7 @@ function renderFilterInput(
     default:
       return (
         <Input
-          value={filter.value as string}
+          value={(filter.value as string) ?? ""}
           onChange={(e) => updateFilterValue(column.id, e.target.value)}
           className="w-[200px]"
         />
@@ -118,6 +123,7 @@ export function RenderFilters({ table, filters, setFilters, updateFilterValue }:
                     setFilters((prev) => {
                       const filterIndex = prev.findIndex((f) => f.id === column.id)
                       const newFilter = { id: column.id, value: "", type: value }
+
                       return filterIndex >= 0
                         ? [...prev.slice(0, filterIndex), newFilter, ...prev.slice(filterIndex + 1)]
                         : [...prev, newFilter]

@@ -17,7 +17,7 @@ import {
 import { ChevronDown, ChevronRight } from "lucide-react"
 import React from "react"
 import { TableProvider } from "../table-context"
-import { Dialogs } from "./filters/utils"
+import { filterRows } from "./filters/utils"
 
 interface TableRootProps<TData, TValue> {
   data: TData[]
@@ -168,7 +168,7 @@ export function TableRoot<TData, TValue>({
     },
     columnResizeMode: "onChange",
     filterFns: {
-      Dialog: Dialogs,
+      filterRows: filterRows,
     },
   })
 

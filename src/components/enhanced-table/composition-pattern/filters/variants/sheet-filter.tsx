@@ -2,14 +2,7 @@
 
 import { useTableContext } from "@/components/enhanced-table/table-context"
 import { Button } from "@/components/ui/button"
-import {
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  Sheet as UiSheet,
-} from "@/components/ui/sheet"
+import { SheetContent, SheetHeader, SheetTitle, SheetTrigger, Sheet as UiSheet } from "@/components/ui/sheet"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import { useDialogs } from "../hooks/use-advanced-filter"
@@ -30,15 +23,13 @@ export function Sheet() {
         <Button variant="outline">Sheet Filter</Button>
       </SheetTrigger>
 
-      <SheetContent side={isDesktop ? "left" : "bottom"} className={cn("space-y-4")}>
+      <SheetContent side={isDesktop ? "left" : "bottom"} className={cn("space-y-4 !max-w-fit")}>
         <SheetHeader>
           <SheetTitle>Filters</SheetTitle>
         </SheetHeader>
 
         <RenderFilters table={table} filters={filters} setFilters={setFilters} updateFilterValue={updateFilterValue} />
-      </SheetContent>
 
-      <SheetFooter>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={resetFilters}>
             Reset
@@ -46,7 +37,7 @@ export function Sheet() {
 
           <Button onClick={applyFilters}>Apply Filters</Button>
         </div>
-      </SheetFooter>
+      </SheetContent>
     </UiSheet>
   )
 }

@@ -7,6 +7,6 @@ declare module "@tanstack/react-table" {
   }
 
   interface FilterFns {
-    Dialog: FilterFn<any>
+    filterRows: FilterFn<any>
   }
 }

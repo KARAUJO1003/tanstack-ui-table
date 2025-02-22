@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ColumnDef, Row } from "@tanstack/react-table"
+import { format } from "date-fns"
 import { useState } from "react"
 
 interface Person {
@@ -16,36 +17,50 @@ interface Person {
   status: string
   progress: number
   department: string
+  createdAt: string
 }
 
 const columns: ColumnDef<Person>[] = [
   {
     accessorKey: "firstName",
     header: "First Name",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "lastName",
     header: "Last Name",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "age",
     header: "Age",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "visits",
     header: "Visits",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "status",
     header: "Status",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "progress",
     header: "Progress",
+    filterFn: "filterRows",
   },
   {
     accessorKey: "department",
     header: "Department",
+    filterFn: "filterRows",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    accessorFn: (row) => format(new Date(row.createdAt), "MM/dd/yyyy HH:mm"),
+    filterFn: "filterRows",
   },
 ]
 
@@ -66,6 +81,7 @@ const generateData = (count: number): Person[] => {
         status: statuses[Math.floor(Math.random() * statuses.length)],
         progress: Math.floor(Math.random() * 100),
         department: departments[Math.floor(Math.random() * departments.length)],
+        createdAt: new Date().toISOString(),
         subRows: generateSubRows(2, newId, level + 1),
       }
     })
@@ -82,6 +98,7 @@ const generateData = (count: number): Person[] => {
       status: statuses[Math.floor(Math.random() * statuses.length)],
       progress: Math.floor(Math.random() * 100),
       department: departments[Math.floor(Math.random() * departments.length)],
+      createdAt: new Date().toISOString(),
       subRows: generateSubRows(2, id, 1),
     }
   })
@@ -101,11 +118,6 @@ export default function EnhancedTableExamples() {
 
   return (
     <div className="container mx-auto py-10 space-y-8">
-      <h1 className="text-3xl font-bold">EnhancedTable Examples</h1>
-      <p className="text-lg text-muted-foreground">
-        Explore the various configurations and features of the EnhancedTable component.
-      </p>
-
       <Tabs defaultValue="full-featured">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="full-featured">Full Featured</TabsTrigger>
@@ -124,7 +136,7 @@ export default function EnhancedTableExamples() {
             </CardHeader>
 
             <CardContent>
-              <EnhancedTable.Root data={data} columns={columns}>
+              <EnhancedTable.Root data={data} columns={columns} enableExpansion enableSelection>
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-2">
                     <EnhancedTable.Toolbar.ColumnManager />
@@ -137,10 +149,10 @@ export default function EnhancedTableExamples() {
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
                   <EnhancedTable.Filters.Dialog />
                   <EnhancedTable.Filters.Sheet />
-                  <EnhancedTable.Filters.Simple />
+                  <EnhancedTable.Filters.Clear />
                 </div>
 
                 <Button onClick={() => setEditingEnabled(!editingEnabled)}>
