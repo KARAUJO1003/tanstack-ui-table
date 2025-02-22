@@ -10,12 +10,13 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { ChevronDown, Download, File, FileText } from "lucide-react"
 import { useTableContext } from "../../table-context"
+import { isSpecialId } from "../utils"
 
 export function ExportTable() {
   const { table } = useTableContext()
 
   const exportData = (format: "pdf" | "csv", dataType: "visible" | "all") => {
-    const columns = table.getAllColumns().filter((column) => !["select", "expand", "select-expand"].includes(column.id))
+    const columns = table.getAllColumns().filter((column) => !isSpecialId(column.id))
 
     const headers = columns.map((column) => {
       const headerContent = column.columnDef.header

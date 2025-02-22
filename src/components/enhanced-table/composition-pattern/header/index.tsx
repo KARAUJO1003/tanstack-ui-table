@@ -7,6 +7,7 @@ import { type Header, flexRender } from "@tanstack/react-table"
 import { ArrowUpDown, GripHorizontal } from "lucide-react"
 import type { CSSProperties } from "react"
 import { useTableContext } from "../../table-context"
+import { isSpecialId } from "../utils"
 import { HeaderDropdown } from "./dropdown"
 
 interface TableHeaderProps {
@@ -86,7 +87,7 @@ function DraggableTableHeader({
               {flexRender(header.column.columnDef.header, header.getContext())}
               <ArrowUpDown className="ml-2 h-4 w-4" />
 
-              {!["expand", "select", "select-expand"].includes(header.column.id) && (
+              {!isSpecialId(header.column.id) && (
                 <Button
                   variant="ghost"
                   className={cn("p-0", isDragging ? "cursor-grabbing" : "cursor-grab")}

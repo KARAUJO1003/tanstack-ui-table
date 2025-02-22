@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { TableCell } from "@/components/ui/table"
 import type { Row } from "@tanstack/react-table"
 import { useState } from "react"
+import { isSpecialId } from "../utils"
 
 interface TableRowEditorProps<TData> {
   row: Row<TData>
@@ -25,7 +26,7 @@ export function TableRowEditor<TData>({ row, onSave, onCancel }: TableRowEditorP
     <>
       {row.getVisibleCells().map((cell) => {
         const column = cell.column
-        if (["expand", "select", "select-expand"].includes(column.id)) return <TableCell key={cell.id} />
+        if (isSpecialId(column.id)) return <TableCell key={cell.id} />
 
         return (
           <TableCell key={cell.id}>

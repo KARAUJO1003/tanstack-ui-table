@@ -146,7 +146,8 @@ export default function EnhancedTableExamples() {
                 enableExpansion
                 enableSelection
                 enableEditing
-                enableColumnReorder
+                enableRowReorder
+                rowReorderKey="firstName"
               >
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-2">

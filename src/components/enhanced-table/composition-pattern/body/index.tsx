@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { TableCell, TableRow, TableBody as UiTableBody } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { SortableContext, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable"
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { type Cell, type Row, flexRender } from "@tanstack/react-table"
 import { Edit2 } from "lucide-react"
@@ -16,7 +21,8 @@ interface TableBodyProps<TData> {
 export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
 
-  const { table, updateData, enableEditing, columnOrder, enableColumnReorder } = useTableContext()
+  const { table, updateData, enableEditing, columnOrder, enableColumnReorder, enableRowReorder, dataIds } =
+    useTableContext()
 
   const handleEdit = (row: Row<TData>) => {
     setEditingRowId(row.id)
@@ -60,22 +66,32 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
                 />
               ))}
             </SortableContext>
+          ) : enableRowReorder && dataIds ? (
+            <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+              {row.getVisibleCells().map((cell, cellIndex) => (
+                <DraggableRow
+                  key={cell.id}
+                  cell={cell}
+                  id={dataIds[row.index]}
+                  cellIndex={cellIndex}
+                  depth={depth}
+                  handleEdit={handleEdit}
+                  enableEditing={enableEditing}
+                  row={row}
+                />
+              ))}
+            </SortableContext>
           ) : (
             row.getVisibleCells().map((cell, cellIndex) => (
               <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
-                {cellIndex === 0 ? (
-                  <div className="flex items-center" style={{ paddingLeft: `${depth * 2}rem` }}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-
-                    {enableEditing && (
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  flexRender(cell.column.columnDef.cell, cell.getContext())
-                )}
+                <DefaultTableCell
+                  cell={cell}
+                  cellIndex={cellIndex}
+                  depth={depth}
+                  handleEdit={handleEdit}
+                  enableEditing={enableEditing}
+                  row={row}
+                />
               </TableCell>
             ))
           )}
@@ -124,6 +140,68 @@ function DraggableTableCell({ cell, cellIndex, depth, handleEdit, enableEditing,
 
   return (
     <TableCell key={cell.id} style={style} ref={setNodeRef}>
+      <DefaultTableCell
+        cell={cell}
+        cellIndex={cellIndex}
+        depth={depth}
+        handleEdit={handleEdit}
+        enableEditing={enableEditing}
+        row={row}
+      />
+    </TableCell>
+  )
+}
+
+interface DraggableRowProps {
+  cell: Cell<any, any>
+  id: string
+  cellIndex: number
+  depth: number
+  handleEdit: (row: Row<any>) => void
+  enableEditing: boolean | undefined
+  row: Row<any>
+}
+
+function DraggableRow({ cell, id, cellIndex, depth, enableEditing, handleEdit, row }: DraggableRowProps) {
+  const { transform, transition, setNodeRef, isDragging } = useSortable({
+    id,
+  })
+
+  const style: CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition: transition,
+    opacity: isDragging ? 0.8 : 1,
+    zIndex: isDragging ? 1 : 0,
+    position: "relative",
+    width: cell.column.getSize(),
+  }
+
+  return (
+    <TableCell key={cell.id} ref={setNodeRef} style={style}>
+      <DefaultTableCell
+        cell={cell}
+        cellIndex={cellIndex}
+        depth={depth}
+        handleEdit={handleEdit}
+        enableEditing={enableEditing}
+        row={row}
+      />
+    </TableCell>
+  )
+}
+
+interface DefaultTableCellProps {
+  cell: Cell<any, any>
+  cellIndex: number
+  depth: number
+  handleEdit: (row: Row<any>) => void
+  enableEditing: boolean | undefined
+  row: Row<any>
+}
+
+export function DefaultTableCell({ cell, cellIndex, depth, handleEdit, enableEditing, row }: DefaultTableCellProps) {
+  return (
+    <>
       {cellIndex === 0 ? (
         <div className="flex items-center" style={{ paddingLeft: `${depth * 2}rem` }}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -137,6 +215,6 @@ function DraggableTableCell({ cell, cellIndex, depth, handleEdit, enableEditing,
       ) : (
         flexRender(cell.column.columnDef.cell, cell.getContext())
       )}
-    </TableCell>
+    </>
   )
 }
