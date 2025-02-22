@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog as UiDialog } from "@/components/ui/dialog"
+import { MessageCircle } from "lucide-react"
 import React from "react"
 import { useTableContext } from "../../../table-context"
 import { useDialogs } from "../hooks/use-advanced-filter"
@@ -16,7 +17,10 @@ export function Dialog() {
   return (
     <UiDialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Dialog Filter</Button>
+        <Button variant="outline">
+          <MessageCircle className="w-4 h-4 mr-2" />
+          Dialog Filter
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="!max-w-fit">

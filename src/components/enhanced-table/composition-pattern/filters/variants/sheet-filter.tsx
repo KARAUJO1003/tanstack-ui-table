@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { SheetContent, SheetHeader, SheetTitle, SheetTrigger, Sheet as UiSheet } from "@/components/ui/sheet"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
+import { FileSpreadsheet } from "lucide-react"
 import { useDialogs } from "../hooks/use-advanced-filter"
 import { RenderFilters } from "../render-fields"
 
@@ -20,7 +21,10 @@ export function Sheet() {
   return (
     <UiSheet modal={false}>
       <SheetTrigger asChild>
-        <Button variant="outline">Sheet Filter</Button>
+        <Button variant="outline">
+          <FileSpreadsheet className="w-4 h-4 mr-2" />
+          Sheet Filter
+        </Button>
       </SheetTrigger>
 
       <SheetContent side={isDesktop ? "left" : "bottom"} className={cn("space-y-4 !max-w-fit")}>
