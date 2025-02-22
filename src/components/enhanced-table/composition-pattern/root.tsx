@@ -1,6 +1,18 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core"
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers"
+import { arrayMove } from "@dnd-kit/sortable"
+import {
   type ColumnDef,
   type ColumnFiltersState,
   type ExpandedState,
@@ -26,6 +38,7 @@ interface TableRootProps<TData, TValue> {
   enableSelection?: boolean
   enableExpansion?: boolean
   enableEditing?: boolean
+  enableColumnReorder?: boolean
 }
 
 export function TableRoot<TData, TValue>({
@@ -34,13 +47,13 @@ export function TableRoot<TData, TValue>({
   enableExpansion,
   enableSelection,
   enableEditing,
+  enableColumnReorder,
   children,
 }: TableRootProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [expanded, setExpanded] = React.useState<ExpandedState>({})
-  const [columnOrder, setColumnOrder] = React.useState<string[]>([])
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const [tableData, setTableData] = React.useState(data)
 
@@ -66,7 +79,7 @@ export function TableRoot<TData, TValue>({
                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                 aria-label="Select all"
               />
-              <Button variant="ghost" size="sm" onClick={() => table.toggleAllRowsExpanded()} className="mr-2">
+              <Button variant="ghost" size="sm" onClick={() => table.toggleAllRowsExpanded()}>
                 {table.getIsAllRowsExpanded() ? (
                   <ChevronDown className="h-4 w-4" />
                 ) : (
@@ -83,7 +96,7 @@ export function TableRoot<TData, TValue>({
                 aria-label="Select row"
               />
               {row.getCanExpand() && (
-                <Button variant="ghost" size="sm" onClick={() => row.toggleExpanded()} className="mr-2">
+                <Button variant="ghost" size="sm" onClick={() => row.toggleExpanded()}>
                   {row.getIsExpanded() ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 </Button>
               )}
@@ -144,7 +157,11 @@ export function TableRoot<TData, TValue>({
     }
 
     return newColumns
-  }, [columns, enableSelection, enableExpansion])
+  }, [columns, enableExpansion, enableSelection])
+
+  const [columnOrder, setColumnOrder] = React.useState<string[]>(() =>
+    memoColumns.map((column) => (enableColumnReorder && column.id ? column.id : "")),
+  )
 
   const table = useReactTable({
     data: tableData,
@@ -168,14 +185,54 @@ export function TableRoot<TData, TValue>({
       expanded,
       columnOrder,
     },
-    columnResizeMode: "onChange",
+    onColumnOrderChange: setColumnOrder,
     filterFns: {
       filterRows: filterRows,
     },
   })
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (active && over && active.id !== over.id && !["select", "expand", "select-expand"].includes(over.id as string)) {
+      setColumnOrder((columnOrder) => {
+        const oldIndex = columnOrder.indexOf(active.id as string)
+        const newIndex = columnOrder.indexOf(over.id as string)
+        return arrayMove(columnOrder, oldIndex, newIndex)
+      })
+    }
+  }
+
+  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}))
+
+  if (enableColumnReorder) {
+    return (
+      <DndContext
+        collisionDetection={closestCenter}
+        modifiers={[restrictToHorizontalAxis]}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
+        <TableProvider
+          table={table}
+          updateData={updateData}
+          columnOrder={columnOrder}
+          enableEditing={enableEditing}
+          enableColumnReorder={enableColumnReorder}
+        >
+          <div className="space-y-4">{children}</div>
+        </TableProvider>
+      </DndContext>
+    )
+  }
+
   return (
-    <TableProvider table={table} updateData={updateData} enableEditing={enableEditing}>
+    <TableProvider
+      table={table}
+      updateData={updateData}
+      columnOrder={columnOrder}
+      enableEditing={enableEditing}
+      enableColumnReorder={enableColumnReorder}
+    >
       <div className="space-y-4">{children}</div>
     </TableProvider>
   )

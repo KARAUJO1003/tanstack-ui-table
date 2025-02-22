@@ -8,6 +8,8 @@ interface TableContextProps {
   table: Table<any>
   updateData: (rowIndex: number, updatedData: any) => void
   enableEditing?: boolean
+  enableColumnReorder?: boolean
+  columnOrder?: string[]
 }
 
 const TableContext = createContext<TableContextProps | undefined>(undefined)
@@ -24,7 +26,13 @@ export const TableProvider: React.FC<{
   table: Table<any>
   updateData: (rowIndex: number, updatedData: any) => void
   enableEditing?: boolean
+  enableColumnReorder?: boolean
+  columnOrder?: string[]
   children: React.ReactNode
-}> = ({ table, updateData, enableEditing, children }) => {
-  return <TableContext.Provider value={{ table, updateData, enableEditing }}>{children}</TableContext.Provider>
+}> = ({ table, updateData, enableEditing, enableColumnReorder, columnOrder, children }) => {
+  return (
+    <TableContext.Provider value={{ table, updateData, enableEditing, enableColumnReorder, columnOrder }}>
+      {children}
+    </TableContext.Provider>
+  )
 }

@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { TableCell, TableRow, TableBody as UiTableBody } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { type Row, flexRender } from "@tanstack/react-table"
+import { SortableContext, horizontalListSortingStrategy, useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import { type Cell, type Row, flexRender } from "@tanstack/react-table"
 import { Edit2 } from "lucide-react"
-import React, { useState } from "react"
+import React, { type CSSProperties, useState } from "react"
 import { useTableContext } from "../../table-context"
 import { TableRowEditor } from "./row-editor"
 
@@ -14,7 +16,7 @@ interface TableBodyProps<TData> {
 export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
 
-  const { table, updateData, enableEditing } = useTableContext()
+  const { table, updateData, enableEditing, columnOrder, enableColumnReorder } = useTableContext()
 
   const handleEdit = (row: Row<TData>) => {
     setEditingRowId(row.id)
@@ -44,11 +46,25 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
     return (
       <React.Fragment key={row.id}>
         <TableRow data-state={row.getIsSelected() && "selected"} className={cn(rowStyle)}>
-          {row.getVisibleCells().map((cell, cellIndex) => {
-            return (
+          {enableColumnReorder && columnOrder ? (
+            <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
+              {row.getVisibleCells().map((cell, cellIndex) => (
+                <DraggableTableCell
+                  key={cell.id}
+                  cell={cell}
+                  cellIndex={cellIndex}
+                  depth={depth}
+                  handleEdit={handleEdit}
+                  enableEditing={enableEditing}
+                  row={row}
+                />
+              ))}
+            </SortableContext>
+          ) : (
+            row.getVisibleCells().map((cell, cellIndex) => (
               <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
                 {cellIndex === 0 ? (
-                  <div className="flex items-center gap-2" style={{ paddingLeft: `${depth * 2}rem` }}>
+                  <div className="flex items-center" style={{ paddingLeft: `${depth * 2}rem` }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
 
                     {enableEditing && (
@@ -58,11 +74,11 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
                     )}
                   </div>
                 ) : (
-                  <>{flexRender(cell.column.columnDef.cell, cell.getContext())}</>
+                  flexRender(cell.column.columnDef.cell, cell.getContext())
                 )}
               </TableCell>
-            )
-          })}
+            ))
+          )}
         </TableRow>
       </React.Fragment>
     )
@@ -80,5 +96,47 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
         </TableRow>
       )}
     </UiTableBody>
+  )
+}
+
+interface DraggableTableCellProps {
+  cell: Cell<any, any>
+  cellIndex: number
+  depth: number
+  handleEdit: (row: Row<any>) => void
+  enableEditing: boolean | undefined
+  row: Row<any>
+}
+
+function DraggableTableCell({ cell, cellIndex, depth, handleEdit, enableEditing, row }: DraggableTableCellProps) {
+  const { isDragging, setNodeRef, transform } = useSortable({
+    id: cell.column.id,
+  })
+
+  const style: CSSProperties = {
+    opacity: isDragging ? 0.8 : 1,
+    position: "relative",
+    transform: transform ? CSS.Translate.toString(transform) : undefined,
+    transition: "width transform 0.2s ease-in-out",
+    width: cell.column.getSize(),
+    zIndex: isDragging ? 1 : 0,
+  }
+
+  return (
+    <TableCell key={cell.id} style={style} ref={setNodeRef}>
+      {cellIndex === 0 ? (
+        <div className="flex items-center" style={{ paddingLeft: `${depth * 2}rem` }}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+
+          {enableEditing && (
+            <Button variant="ghost" size="sm" onClick={() => handleEdit(row)}>
+              <Edit2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ) : (
+        flexRender(cell.column.columnDef.cell, cell.getContext())
+      )}
+    </TableCell>
   )
 }

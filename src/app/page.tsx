@@ -20,41 +20,49 @@ interface Person {
 
 const columns: ColumnDef<Person>[] = [
   {
+    id: "firstName",
     accessorKey: "firstName",
     header: "First Name",
     filterFn: "filterRows",
   },
   {
+    id: "lastName",
     accessorKey: "lastName",
     header: "Last Name",
     filterFn: "filterRows",
   },
   {
+    id: "age",
     accessorKey: "age",
     header: "Age",
     filterFn: "filterRows",
   },
   {
+    id: "visits",
     accessorKey: "visits",
     header: "Visits",
     filterFn: "filterRows",
   },
   {
+    id: "status",
     accessorKey: "status",
     header: "Status",
     filterFn: "filterRows",
   },
   {
+    id: "progress",
     accessorKey: "progress",
     header: "Progress",
     filterFn: "filterRows",
   },
   {
+    id: "department",
     accessorKey: "department",
     header: "Department",
     filterFn: "filterRows",
   },
   {
+    id: "createdAt",
     accessorKey: "createdAt",
     header: "Created At",
     accessorFn: (row) => format(new Date(row.createdAt), "MM/dd/yyyy HH:mm"),
@@ -132,7 +140,14 @@ export default function EnhancedTableExamples() {
             </CardHeader>
 
             <CardContent>
-              <EnhancedTable.Root data={data} columns={columns} enableExpansion enableSelection enableEditing>
+              <EnhancedTable.Root
+                data={data}
+                columns={columns}
+                enableExpansion
+                enableSelection
+                enableEditing
+                enableColumnReorder
+              >
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-2">
                     <EnhancedTable.Toolbar.ColumnManager />
