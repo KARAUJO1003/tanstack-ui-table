@@ -25,6 +25,7 @@ interface TableRootProps<TData, TValue> {
   children: React.ReactNode
   enableSelection?: boolean
   enableExpansion?: boolean
+  enableEditing?: boolean
 }
 
 export function TableRoot<TData, TValue>({
@@ -32,6 +33,7 @@ export function TableRoot<TData, TValue>({
   columns,
   enableExpansion,
   enableSelection,
+  enableEditing,
   children,
 }: TableRootProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({})
@@ -173,7 +175,7 @@ export function TableRoot<TData, TValue>({
   })
 
   return (
-    <TableProvider table={table} updateData={updateData}>
+    <TableProvider table={table} updateData={updateData} enableEditing={enableEditing}>
       <div className="space-y-4">{children}</div>
     </TableProvider>
   )

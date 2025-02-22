@@ -7,6 +7,7 @@ import { createContext, useContext } from "react"
 interface TableContextProps {
   table: Table<any>
   updateData: (rowIndex: number, updatedData: any) => void
+  enableEditing?: boolean
 }
 
 const TableContext = createContext<TableContextProps | undefined>(undefined)
@@ -22,7 +23,8 @@ export const useTableContext = () => {
 export const TableProvider: React.FC<{
   table: Table<any>
   updateData: (rowIndex: number, updatedData: any) => void
+  enableEditing?: boolean
   children: React.ReactNode
-}> = ({ table, updateData, children }) => {
-  return <TableContext.Provider value={{ table, updateData }}>{children}</TableContext.Provider>
+}> = ({ table, updateData, enableEditing, children }) => {
+  return <TableContext.Provider value={{ table, updateData, enableEditing }}>{children}</TableContext.Provider>
 }

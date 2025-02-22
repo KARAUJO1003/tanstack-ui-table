@@ -25,20 +25,20 @@ export function TableRowEditor<TData>({ row, onSave, onCancel }: TableRowEditorP
     <>
       {row.getVisibleCells().map((cell) => {
         const column = cell.column
-        if (column.id === "select") return <TableCell key={cell.id} />
+        if (["expand", "select", "select-expand"].includes(column.id)) return <TableCell key={cell.id} />
 
         return (
           <TableCell key={cell.id}>
             <Input
-              value={editedData[column.id as keyof TData] ?? (cell.getValue() as string)}
+              value={String(editedData[column.id as keyof TData] ?? cell.getValue())}
               onChange={(e) => handleInputChange(column.id, e.target.value)}
             />
           </TableCell>
         )
       })}
 
-      <TableCell>
-        <Button onClick={handleSave} variant="outline" size="sm" className="mr-2">
+      <TableCell className="space-y-1">
+        <Button onClick={handleSave} variant="outline" size="sm">
           Save
         </Button>
 

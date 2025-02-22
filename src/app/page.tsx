@@ -1,12 +1,10 @@
 "use client"
 
 import { EnhancedTable } from "@/components/enhanced-table/composition-pattern"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import { format } from "date-fns"
-import { useState } from "react"
 
 interface Person {
   id: number
@@ -114,8 +112,6 @@ const customRowStyles = (row: Row<Person>) => {
 }
 
 export default function EnhancedTableExamples() {
-  const [editingEnabled, setEditingEnabled] = useState(false)
-
   return (
     <div className="container mx-auto py-10 space-y-8">
       <Tabs defaultValue="full-featured">
@@ -136,7 +132,7 @@ export default function EnhancedTableExamples() {
             </CardHeader>
 
             <CardContent>
-              <EnhancedTable.Root data={data} columns={columns} enableExpansion enableSelection>
+              <EnhancedTable.Root data={data} columns={columns} enableExpansion enableSelection enableEditing>
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-2">
                     <EnhancedTable.Toolbar.ColumnManager />
@@ -155,14 +151,10 @@ export default function EnhancedTableExamples() {
                   <EnhancedTable.Filters.Clear />
                 </div>
 
-                <Button onClick={() => setEditingEnabled(!editingEnabled)}>
-                  {editingEnabled ? "Disable Editing" : "Enable Editing"}
-                </Button>
-
                 <div className="rounded-md border">
                   <EnhancedTable.Table>
                     <EnhancedTable.Header />
-                    <EnhancedTable.Body enableEdit={editingEnabled} customRowStyles={customRowStyles} />
+                    <EnhancedTable.Body customRowStyles={customRowStyles} />
                   </EnhancedTable.Table>
                 </div>
                 <EnhancedTable.Pagination />
