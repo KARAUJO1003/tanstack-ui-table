@@ -1,37 +1,38 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-	"organizeImports": {
-		"enabled": true,
-		"include": []
-	},
-	"formatter": {
-		"enabled": true,
-		"formatWithErrors": true,
-		"indentStyle": "space",
-		"indentWidth": 2,
-		"lineEnding": "lf",
-		"lineWidth": 120,
-		"attributePosition": "auto"
-	},
-	"javascript": {
-		"formatter": {
-			"semicolons": "asNeeded"
-		}
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "info"
-			},
-			"correctness": {
-				"noUnusedImports": "error"
-			}
-		},
-		"ignore": [
-			"node_modules",
-			".next"
-		]
-	}
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "organizeImports": {
+    "enabled": true,
+    "include": []
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120,
+    "attributePosition": "auto"
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "info",
+        "noArrayIndexKey": "info"
+      },
+      "correctness": {
+        "noUnusedImports": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "info"
+      }
+    },
+    "ignore": ["node_modules", ".next"]
+  }
 }

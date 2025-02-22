@@ -18,6 +18,8 @@ function renderFilterInput(
   const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id)
   const type = detectValueType(firstValue)
 
+  console.log("type", type, firstValue)
+
   switch (type) {
     case "number":
       if (filter.type === "between") {
@@ -104,12 +106,14 @@ export function RenderFilters({ table, filters, setFilters, updateFilterValue }:
         .filter((column) => column.getCanFilter())
         .map((column) => {
           const sampleValue = firstRow ? firstRow.getValue(column.id) : null
-          const availableFilterTypes = getColumnFilterTypesByValue(sampleValue)
+          const filter = filters.find((f) => f.id === column.id)
+
+          const availableFilterTypes = getColumnFilterTypesByValue(sampleValue, filter?.type)
 
           const currentFilter = filters.find((f) => f.id === column.id) || {
             id: column.id,
             value: "",
-            type: availableFilterTypes[0],
+            type: availableFilterTypes[0] ?? "contains",
           }
 
           return (

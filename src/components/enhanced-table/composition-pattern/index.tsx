@@ -1,9 +1,16 @@
-import { Table } from "@/components/ui/table"
-import { TableBody } from "./body"
+import dynamic from "next/dynamic"
+
+const Table = dynamic(() => import("@/components/ui/table").then((mod) => mod.Table), { ssr: false })
+const TableBody = dynamic(() => import("./body").then((mod) => mod.TableBody), { ssr: false })
+const TableHeader = dynamic(() => import("./header").then((mod) => mod.TableHeader), { ssr: false })
+const TablePagination = dynamic(() => import("./pagination").then((mod) => mod.TablePagination), { ssr: false })
+const TableRoot = dynamic(() => import("./root").then((mod) => mod.TableRoot), {
+  ssr: false,
+  loading: () => <TableSkeleton />,
+})
+
+import { TableSkeleton } from "@/components/skeletons/table"
 import { TableFilters } from "./filters"
-import { TableHeader } from "./header"
-import { TablePagination } from "./pagination"
-import { TableRoot } from "./root"
 import { TableToolbar } from "./toolbar"
 
 export const EnhancedTable = {
@@ -15,3 +22,5 @@ export const EnhancedTable = {
   Pagination: TablePagination,
   Table: Table,
 }
+
+export default EnhancedTable

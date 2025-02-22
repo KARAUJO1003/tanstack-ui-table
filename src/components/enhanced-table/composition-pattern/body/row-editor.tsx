@@ -29,23 +29,25 @@ export function TableRowEditor<TData>({ row, onSave, onCancel }: TableRowEditorP
         if (isSpecialId(column.id)) return <TableCell key={cell.id} />
 
         return (
-          <TableCell key={cell.id}>
+          <TableCell key={cell.id} className="py-2 px-4">
             <Input
               value={String(editedData[column.id as keyof TData] ?? cell.getValue())}
               onChange={(e) => handleInputChange(column.id, e.target.value)}
+              className="h-8 text-sm"
             />
           </TableCell>
         )
       })}
 
-      <TableCell className="space-y-1">
-        <Button onClick={handleSave} variant="outline" size="sm">
-          Save
-        </Button>
-
-        <Button onClick={onCancel} variant="outline" size="sm">
-          Cancel
-        </Button>
+      <TableCell className="py-2 px-4">
+        <div className="flex space-x-2">
+          <Button onClick={handleSave} variant="outline" size="sm" className="h-8 px-3 text-xs">
+            Save
+          </Button>
+          <Button onClick={onCancel} variant="outline" size="sm" className="h-8 px-3 text-xs">
+            Cancel
+          </Button>
+        </div>
       </TableCell>
     </>
   )

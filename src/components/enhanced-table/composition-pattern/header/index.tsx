@@ -7,7 +7,7 @@ import { type Header, flexRender } from "@tanstack/react-table"
 import { ArrowUpDown, GripHorizontal } from "lucide-react"
 import type { CSSProperties } from "react"
 import { useTableContext } from "../../table-context"
-import { isSpecialId } from "../utils"
+import { getAlignment, isSpecialId } from "../utils"
 import { HeaderDropdown } from "./dropdown"
 
 interface TableHeaderProps {
@@ -18,9 +18,9 @@ export function TableHeader({ variant = "default" }: TableHeaderProps) {
   const { table, enableColumnReorder, columnOrder } = useTableContext()
 
   return (
-    <UiTableHeader>
+    <UiTableHeader className="bg-muted/50 sticky top-0 z-10">
       {table.getHeaderGroups().map((headerGroup) => (
-        <TableRow key={headerGroup.id}>
+        <TableRow key={headerGroup.id} className="hover:bg-muted/60 transition-colors">
           {enableColumnReorder && columnOrder ? (
             <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
               {headerGroup.headers.map((header) => (
@@ -29,14 +29,25 @@ export function TableHeader({ variant = "default" }: TableHeaderProps) {
             </SortableContext>
           ) : (
             headerGroup.headers.map((header) => (
-              <TableHead key={header.id} style={{ width: header.getSize() }}>
+              <TableHead
+                key={header.id}
+                style={{ width: header.getSize() }}
+                className={cn(
+                  getAlignment(header.column.columnDef.meta?.align),
+                  "py-3 px-4 font-semibold text-sm text-muted-foreground",
+                )}
+              >
                 {header.isPlaceholder ? null : (
                   <div className="flex items-center">
                     {header.column.getCanSort() ? (
                       variant === "dropdown" ? (
                         <HeaderDropdown column={header.column} title={header.column.columnDef.header as string} />
                       ) : (
-                        <Button variant="ghost" onClick={() => header.column.toggleSorting()}>
+                        <Button
+                          variant="ghost"
+                          onClick={() => header.column.toggleSorting()}
+                          className="-ml-4 h-8 data-[state=open]:bg-accent"
+                        >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           <ArrowUpDown className="ml-2 h-4 w-4" />
                         </Button>
@@ -77,20 +88,33 @@ function DraggableTableHeader({
   }
 
   return (
-    <TableHead ref={setNodeRef} colSpan={header.colSpan} style={style} {...attributes}>
+    <TableHead
+      ref={setNodeRef}
+      colSpan={header.colSpan}
+      style={style}
+      {...attributes}
+      className={cn(
+        getAlignment(header.column.columnDef.meta?.align),
+        "py-3 px-4 font-semibold text-sm text-muted-foreground",
+      )}
+    >
       <div className="flex items-center">
         {header.column.getCanSort() ? (
           variant === "dropdown" ? (
-            <HeaderDropdown column={header.column} title={header.column.columnDef.header as string} />
+            <HeaderDropdown column={header.column} title={header.column.columnDef.header} />
           ) : (
-            <Button variant="ghost" onClick={() => header.column.toggleSorting()}>
+            <Button
+              variant="ghost"
+              onClick={() => header.column.toggleSorting()}
+              className="-ml-4 h-8 data-[state=open]:bg-accent"
+            >
               {flexRender(header.column.columnDef.header, header.getContext())}
               <ArrowUpDown className="ml-2 h-4 w-4" />
 
               {!isSpecialId(header.column.id) && (
                 <Button
                   variant="ghost"
-                  className={cn("p-0", isDragging ? "cursor-grabbing" : "cursor-grab")}
+                  className={cn("p-0 ml-2", isDragging ? "cursor-grabbing" : "cursor-grab")}
                   {...listeners}
                 >
                   <GripHorizontal className="h-4 w-4" />

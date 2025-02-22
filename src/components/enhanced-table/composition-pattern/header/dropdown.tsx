@@ -7,11 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import type { Column } from "@tanstack/react-table"
+import type { Column, ColumnDefTemplate, HeaderContext } from "@tanstack/react-table"
 import { ArrowDownIcon, ArrowUpIcon, ChevronUp, EyeOffIcon, XCircle } from "lucide-react"
 
 interface HeaderDropdownProps {
-  title: string
+  title: ColumnDefTemplate<HeaderContext<unknown, unknown>> | undefined
   column: Column<any>
 }
 
@@ -21,7 +21,12 @@ export function HeaderDropdown({ column, title }: HeaderDropdownProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
-            <span>{title}</span>
+            <span>
+              {typeof title === "function"
+                ? // @ts-ignore
+                  title({})
+                : title}
+            </span>
             {column.getIsSorted() === "desc" ? (
               <ArrowDownIcon className="ml-2 h-4 w-4" />
             ) : column.getIsSorted() === "asc" ? (

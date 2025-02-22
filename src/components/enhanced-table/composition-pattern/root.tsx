@@ -52,6 +52,10 @@ export function TableRoot<TData, TValue>({
   const [pagination, setPagination] = React.useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
   const [tableData, setTableData] = React.useState(data)
 
+  React.useEffect(() => {
+    setTableData(data)
+  }, [data])
+
   const updateData = (rowIndex: number, updatedData: TData) => {
     setTableData((prevData) => {
       const newData = [...prevData]
@@ -60,7 +64,10 @@ export function TableRoot<TData, TValue>({
     })
   }
 
-  const dataIds = React.useMemo(() => tableData.map((data) => (data as any)[rowReorderKey]), [tableData, rowReorderKey])
+  const dataIds = React.useMemo(
+    () => tableData.map((data) => (data as any)[rowReorderKey!]),
+    [tableData, rowReorderKey],
+  )
 
   const memoColumns = React.useMemo(() => {
     let newColumns = [...columns]
@@ -187,7 +194,7 @@ export function TableRoot<TData, TValue>({
     onExpandedChange: setExpanded,
     getExpandedRowModel: getExpandedRowModel(),
     getSubRows: (row: any) => row.subRows,
-    getRowId: (row: any) => (row as any)[rowReorderKey],
+    getRowId: (row: any) => (row as any)[rowReorderKey!],
     state: {
       rowSelection,
       sorting,

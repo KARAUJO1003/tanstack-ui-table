@@ -12,23 +12,24 @@ import { type Cell, type Row, flexRender } from "@tanstack/react-table"
 import { Edit2 } from "lucide-react"
 import React, { type CSSProperties, useState } from "react"
 import { useTableContext } from "../../table-context"
+import { getAlignment } from "../utils"
 import { TableRowEditor } from "./row-editor"
 
-interface TableBodyProps<TData> {
-  customRowStyles?: (row: Row<TData>) => string
+interface TableBodyProps {
+  customRowStyles?: (row: Row<any>) => string
 }
 
-export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
+export function TableBody({ customRowStyles }: TableBodyProps) {
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
 
   const { table, updateData, enableEditing, columnOrder, enableColumnReorder, enableRowReorder, dataIds } =
     useTableContext()
 
-  const handleEdit = (row: Row<TData>) => {
+  const handleEdit = (row: Row<any>) => {
     setEditingRowId(row.id)
   }
 
-  const handleSave = (rowIndex: number, updatedData: TData) => {
+  const handleSave = (rowIndex: number, updatedData: any) => {
     updateData(rowIndex, updatedData)
     setEditingRowId(null)
   }
@@ -37,13 +38,13 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
     setEditingRowId(null)
   }
 
-  const renderRow = (row: Row<TData>) => {
+  const renderRow = (row: Row<any>) => {
     const rowStyle = customRowStyles ? customRowStyles(row) : ""
     const depth = row.depth || 0
 
     if (editingRowId === row.id) {
       return (
-        <TableRow key={row.id}>
+        <TableRow key={row.id} className="bg-muted/50">
           <TableRowEditor row={row} onSave={handleSave} onCancel={handleCancel} />
         </TableRow>
       )
@@ -51,7 +52,10 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
 
     return (
       <React.Fragment key={row.id}>
-        <TableRow data-state={row.getIsSelected() && "selected"} className={cn(rowStyle)}>
+        <TableRow
+          data-state={row.getIsSelected() && "selected"}
+          className={cn(rowStyle, "hover:bg-muted/50 transition-colors")}
+        >
           {enableColumnReorder && columnOrder ? (
             <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
               {row.getVisibleCells().map((cell, cellIndex) => (
@@ -83,7 +87,11 @@ export function TableBody<TData>({ customRowStyles }: TableBodyProps<TData>) {
             </SortableContext>
           ) : (
             row.getVisibleCells().map((cell, cellIndex) => (
-              <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
+              <TableCell
+                key={cell.id}
+                style={{ width: cell.column.getSize() }}
+                className={cn(getAlignment(cell.column.columnDef.meta?.align), "py-3 px-4")}
+              >
                 <DefaultTableCell
                   cell={cell}
                   cellIndex={cellIndex}
@@ -139,7 +147,12 @@ function DraggableTableCell({ cell, cellIndex, depth, handleEdit, enableEditing,
   }
 
   return (
-    <TableCell key={cell.id} style={style} ref={setNodeRef}>
+    <TableCell
+      key={cell.id}
+      style={style}
+      ref={setNodeRef}
+      className={cn(getAlignment(cell.column.columnDef.meta?.align))}
+    >
       <DefaultTableCell
         cell={cell}
         cellIndex={cellIndex}
@@ -177,7 +190,12 @@ function DraggableRow({ cell, id, cellIndex, depth, enableEditing, handleEdit, r
   }
 
   return (
-    <TableCell key={cell.id} ref={setNodeRef} style={style}>
+    <TableCell
+      key={cell.id}
+      ref={setNodeRef}
+      style={style}
+      className={cn(getAlignment(cell.column.columnDef.meta?.align))}
+    >
       <DefaultTableCell
         cell={cell}
         cellIndex={cellIndex}

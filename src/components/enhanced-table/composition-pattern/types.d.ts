@@ -15,7 +15,7 @@ interface TableRootWithColumnReorderProps<TData, TValue> extends TableRootBasePr
 
 interface TableRootWithRowReorderProps<TData, TValue> extends TableRootBaseProps<TData, TValue> {
   enableRowReorder: true
-  rowReorderKey: keyof TData
+  rowReorderKey: string
   enableColumnReorder?: false
 }
 
