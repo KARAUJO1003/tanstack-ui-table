@@ -1,14 +1,33 @@
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import type React from "react"
+import { useState } from "react"
 import { useTableContext } from "../table-context"
 
 interface TablePaginationProps {
   options?: number[]
+  enableGoToPage?: boolean
 }
 
-export function TablePagination({ options = [10, 20, 30, 40, 50] }: TablePaginationProps) {
+export function TablePagination({ options = [10, 20, 30, 40, 50], enableGoToPage = true }: TablePaginationProps) {
   const { table } = useTableContext()
+  const [pageInput, setPageInput] = useState("")
+
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value)
+  }
+
+  const handlePageInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const pageNumber = Number.parseInt(pageInput, 10)
+      if (!Number.isNaN(pageNumber) && pageNumber > 0 && pageNumber <= table.getPageCount()) {
+        table.setPageIndex(pageNumber - 1)
+        setPageInput("")
+      }
+    }
+  }
 
   return (
     <div className="flex items-center justify-between px-2">
@@ -39,9 +58,24 @@ export function TablePagination({ options = [10, 20, 30, 40, 50] }: TablePaginat
           </Select>
         </div>
 
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-        </div>
+        {enableGoToPage && (
+          <div className="flex items-center space-x-2">
+            <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            </div>
+
+            <Input
+              type="number"
+              min={1}
+              max={table.getPageCount()}
+              value={pageInput}
+              onChange={handlePageInputChange}
+              onKeyDown={handlePageInputKeyDown}
+              placeholder="Go to page"
+              className="h-8 w-[70px]"
+            />
+          </div>
+        )}
 
         <div className="flex items-center space-x-2">
           <Button
