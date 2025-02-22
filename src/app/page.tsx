@@ -150,7 +150,7 @@ export default function EnhancedTableExamples() {
               >
                 <div className="flex justify-between items-center">
                   <div className="flex space-x-2">
-                    <EnhancedTable.Toolbar.ColumnManager />
+                    <EnhancedTable.Toolbar.ViewOptions />
                     <EnhancedTable.Toolbar.ExpandCollapse />
                   </div>
 
