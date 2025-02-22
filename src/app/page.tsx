@@ -155,8 +155,7 @@ export default function EnhancedTableExamples() {
                   </div>
 
                   <div className="flex space-x-2">
-                    <EnhancedTable.Toolbar.ExportCsv />
-                    <EnhancedTable.Toolbar.ExportPdf />
+                    <EnhancedTable.Toolbar.ExportTable />
                   </div>
                 </div>
 
