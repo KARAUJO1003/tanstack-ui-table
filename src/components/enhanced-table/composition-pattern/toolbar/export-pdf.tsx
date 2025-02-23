@@ -16,13 +16,32 @@ export function ExportTable() {
   const { table } = useTableContext()
 
   const exportData = (format: "pdf" | "csv", dataType: "visible" | "all") => {
-    const columns = table.getAllColumns().filter((column) => !isSpecialId(column.id))
+    const columns = table.getAllColumns().filter((column) => {
+      if (isSpecialId(column.id)) return false
+      const metaExport = column.columnDef.meta?.export
+      if (metaExport === false) return false
+      if (metaExport && typeof metaExport === "object") {
+        if (format === "pdf" && metaExport.pdf === false) return false
+        if (format === "csv" && metaExport.csv === false) return false
+      }
+      return true
+    })
 
     const headers = columns.map((column) => {
+      const metaExport = column.columnDef.meta?.export
+      if (metaExport && typeof metaExport === "object") {
+        if (format === "pdf" && metaExport.pdf && typeof metaExport.pdf === "object" && metaExport.pdf.header) {
+          return metaExport.pdf.header
+        }
+        if (format === "csv" && metaExport.csv && typeof metaExport.csv === "object" && metaExport.csv.header) {
+          return metaExport.csv.header
+        }
+      }
+
       const headerContent = column.columnDef.header
 
       if (typeof headerContent === "function") {
-        return String(headerContent({ column, header: column.columnDef.header as any, table }))
+        return column.id || ""
       }
 
       return String(headerContent || column.id)
@@ -50,7 +69,7 @@ export function ExportTable() {
         head: [headers],
         body: rows,
         theme: "grid",
-        styles: { fontSize: 10 },
+        styles: { fontSize: 8, cellPadding: 2 },
         headStyles: { fillColor: [41, 128, 185] },
         margin: { top: 20 },
       })

@@ -25,6 +25,7 @@ export const columns: ColumnDef<Person>[] = [
       <img src={row.original.avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover shadow-sm" />
     ),
     filterFn: "filterRows",
+    meta: { export: { pdf: false } },
   },
   {
     id: "firstName",
@@ -35,7 +36,7 @@ export const columns: ColumnDef<Person>[] = [
         First Name
       </span>
     ),
-    meta: { align: "center" },
+    meta: { align: "center", export: { pdf: { header: "First Name" } } },
     filterFn: "filterRows",
   },
   {
@@ -50,7 +51,7 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "age",
     header: "Age",
     cell: ({ row }) => <span className="font-semibold text-blue-600">{row.getValue("age")}</span>,
-    meta: { align: "center" },
+    meta: { align: "center", export: { pdf: { header: "Age" } } },
     filterFn: "filterRows",
   },
   {
@@ -62,7 +63,7 @@ export const columns: ColumnDef<Person>[] = [
         Visits
       </span>
     ),
-    meta: { align: "center" },
+    meta: { align: "center", export: { pdf: { header: "Visits" } } },
     filterFn: "filterRows",
   },
   {
@@ -75,6 +76,7 @@ export const columns: ColumnDef<Person>[] = [
       </Badge>
     ),
     filterFn: "filterRows",
+    meta: { export: { pdf: { header: "Status" } } },
   },
   {
     id: "progress",
@@ -97,6 +99,7 @@ export const columns: ColumnDef<Person>[] = [
       </div>
     ),
     filterFn: "filterRows",
+    meta: { export: { pdf: { header: "Progress" } } },
   },
   {
     id: "department",
@@ -124,6 +127,7 @@ export const columns: ColumnDef<Person>[] = [
       )
     },
     filterFn: "filterRows",
+    meta: { export: { pdf: { header: "Department" } } },
   },
   {
     id: "createdAt",
@@ -137,5 +141,6 @@ export const columns: ColumnDef<Person>[] = [
     accessorFn: (row) => format(new Date(row.createdAt), "MM/dd/yyyy"),
     cell: ({ row }) => <span className="text-sm text-gray-500">{row.getValue("createdAt")}</span>,
     filterFn: "filterRows",
+    meta: { export: { pdf: { header: "Created At" } } },
   },
 ]
