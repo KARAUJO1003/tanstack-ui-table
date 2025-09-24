@@ -1,4 +1,6 @@
-const themes = {
+import type { ThemeSystem } from "../types";
+
+export const themeColors: ThemeSystem = {
   Orange: {
     light: {
       background: "0 0% 100%",
@@ -225,16 +227,3 @@ const themes = {
     },
   },
 };
-
-export default function setGlobalColorTheme(
-  themeMode: "light" | "dark",
-  color: ThemeColors,
-) {
-  const theme = themes[color][themeMode] as {
-    [key: string]: string;
-  };
-
-  for (const key in theme) {
-    document.documentElement.style.setProperty(`--${key}`, theme[key]);
-  }
-}
