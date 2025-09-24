@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import ThemeDataProvider from "@/context/theme-data-provider";
+import { ThemeColorToggle } from "@/components/theme-color-toggle";
+import { ThemeModeToggle } from "@/components/theme-mode-toggle";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { ChartAreaInteractive } from "@/components/chart";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +38,28 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Suspense>{children}</Suspense>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ThemeDataProvider>
+            <Suspense>
+              <nav className="top-0 z-10 sticky flex justify-end items-center gap-2 bg-muted/30 backdrop-blur-sm px-10 py-4 w-full">
+                <div className="flex flex-1 bg-primary p-2"></div>
+                <Button>Button</Button>
+                <Switch />
+                <ThemeColorToggle />
+                <ThemeModeToggle />
+              </nav>
+              <div className="flex bg-muted/20 p-6 border rounded-md w-full min-h-64">
+                <ChartAreaInteractive />
+              </div>
+              {children}
+            </Suspense>
+          </ThemeDataProvider>
+        </NextThemesProvider>
       </body>
     </html>
   );
